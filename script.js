@@ -27,6 +27,19 @@
           }
       });
 
+       // Elementni ID orqali ushlaymiz
+const registerBtn = document.getElementById("registerBtn");
+
+// Click hodisasini eshitamiz
+registerBtn.addEventListener("click", function(e) {
+    // Agar <a> tegi sahifani yangilab yubormasligi uchun e.preventDefault() qo'shish mumkin
+    e.preventDefault();
+    
+    // Sahifani o'zgartiramiz
+    window.location.href = "register.html";
+});
+
+
 
 
         // Navbar switching
@@ -377,4 +390,5 @@ newForm.addEventListener("submit", async function (e) {
     canSubmit = true;
     newAddBtn.disabled = false;
   }
+
 });
