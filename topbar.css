@@ -1,0 +1,79 @@
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 250px;              /* sidebar kengligi */
+  width: calc(100% - 250px); /* qolgan joy */
+  height: 80px;
+
+  z-index: 100;
+  background: rgba(15, 17, 22, 0.9);
+  backdrop-filter: blur(15px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: all 0.3s ease;
+  padding-top: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+}
+
+.topbar input {
+  flex: 1;
+  min-height: 45px;
+  margin-right: 12px;
+  padding: 10px;
+  border-radius: var(--radius);
+  border: none;
+  background: var(--card);
+  color: var(--text);
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 20px;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  z-index: 99;
+}
+
+.topbar input:focus {
+  outline: none;
+  box-shadow: 0 0 10px var(--blue, #3498db);
+  border-radius: 20px;
+}
+
+.search-btn {
+  padding: 15px 20px;
+  max-height: 45px;
+  border-radius: var(--radius);
+  border: none;
+  background: var(--card);
+  color: var(--bg);
+  background-color: var(--blue);
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  z-index: 100;
+}
+
+/* ===== TOPBAR RESPONSIVE (Tablet & Mobile) ===== */
+@media (max-width: 1024px) {
+
+  .topbar {
+    left: 0;                  /* sidebar emas, chapdan boshlansin */
+    width: 100%;              /* full width */
+    padding: 0 10px;
+  }
+
+  .topbar input {
+    width: 100%;              /* input to‘liq cho‘zilsin */
+    height: 45px;
+    margin: 20px 15px 15px 15px;
+  }
+
+  /* Button yo‘q */
+  .search-btn {
+    display: none;
+  }
+
+}

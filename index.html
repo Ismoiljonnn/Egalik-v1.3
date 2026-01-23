@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Egalik</title>
+<link rel="icon" type="png" href="Group 16.png">
+<link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="topbar.css">
+<link rel="stylesheet" href="carousel.css">
+<link rel="stylesheet" href="profile.css">
+</head>
+<body>
+  
+    <!-- GLOBAL LOADER -->
+<div id="global-loader">
+  <div class="loader-box">
+    <div class="spinner"></div>
+    <h3>Server ishga tushmoqda</h3>
+    <p>Iltimos, bir oz kuting...</p>
+  </div>
+</div>
+
+<aside class="sidebar">
+  <div class="logo">
+    <img src="Group 16.png" alt="Logo">
+    <div class="logo-text">EGALIK</div>
+  </div>
+  <nav>
+    <div class="nav-items">
+      <div class="nav-item">
+        <a data-page="home" class="active">
+          <div>
+            <img src="Home menu.svg">
+            <p>Asosiy</p>
+          </div>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a data-page="categories">
+          <div>
+            <img src="Katalog.svg">
+            <p>Bo'limlar</p>
+          </div>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a data-page="add">
+          <div>
+            <img src="post.svg">
+            <p>E’lon qo‘shish</p>
+          </div>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a data-page="profile">
+          <div>
+            <img src="Icon (1).svg">
+            <p>Mening e’lonlarim</p>
+          </div>
+        </a>
+      </div>
+      <div class="nav-item">
+        <a data-page="profile-panel">
+          <div>
+            <img src="Profile.svg  ">
+            <p>Sozlamalar</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </nav>
+</aside>
+
+<main class="content">
+<div id="msg" style="display:none;"></div>
+
+<!-- Home -->
+<section id="home" class="page">
+  <header class="topbar">
+    <input type="text" id="searchInput" placeholder="Nimalar qidiryapsiz?">
+    <button type="submit" id="searchBtn" class="search-btn">Qidirish</button>
+  </header>
+  
+
+        <!-- Carousel -->
+    <section class="carousel-wrap" id="carousel">
+    <div class="slides" id="slides">
+      <!-- Har bir .slide ichiga rasm qo‘yiladi. Hozircha siyoh placeholder bor. -->
+      <div class="slide">
+      <div class="placeholder">
+        <img src="Group 28 (1).svg">
+      </div>
+      </div>
+      <div class="slide">
+      <div class="placeholder">
+        <img src="Group 29.svg">
+      </div>
+      </div>
+      <div class="slide">
+      <div class="placeholder">
+        <img src="Group 30.svg">
+      </div>
+      </div>
+      <div class="slide">
+      <div class="placeholder">
+        <img src="Group 31.svg">
+      </div>
+      </div>
+    </div>
+
+
+    <!-- Chap va o'ng strelkalar -->
+    <button class="arrow left" aria-label="Oldinga" id="prevBtn">
+    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></svg>
+    </button>
+
+
+    <button class="arrow right" aria-label="Orqaga" id="nextBtn">
+    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"></path></svg>
+    </button>
+
+
+    <!-- Dots -->
+    <div class="dots" id="dots"></div>
+    </section>
+
+  <div class="ads-grid">
+    
+  </div>
+</section>
+
+    <!-- Categories -->
+<section id="categories" class="page" style="display:none">
+  <header class="topbar">
+    <input type="text" id="searchInput" placeholder="Nimalar qidiryapsiz?">
+    <button type="submit" id="searchBtn" class="search-btn">Qidirish</button>
+  </header>
+    <div class="categories">
+      <div class="category-card" data-category="texnika" >Texnika</div>
+      <div class="category-card" data-category="uskunalar" >Asbob uskunalar</div>
+      <div class="category-card" data-category="transport" >Transport</div>
+      <!-- <div class="category-card" data-category="tarixiy-buyumlar" >Tarixiy buyumlar</div> -->
+      <div class="category-card" data-category="qolmehnati" >Qo'l san'ati</div>
+      <div class="category-card" data-category="kochmas-mulk" >Ko‘chmas mulk</div>
+      <div class="category-card" data-category="qishloq-xojaligi" >Qishloq xo'jaligi</div>
+      <div class="category-card" data-category="maydonlar" >Yer maydonlari</div>
+    </div>
+</section>
+
+    <!-- Add -->
+<section id="add" class="page" style="display:none"> 
+    <form id="addForm" enctype="multipart/form-data">
+      <select name="holat" required>
+        <option value="ijaraga">Ijaraga beriladi </option>    
+        <option value="sotiladi">Sotiladi</option>   
+      </select>
+
+      <input type="text" name="title" placeholder="E’lon nomi" required>
+
+      <select name="kategoriya" required>
+        <option value="texnika" data-category="texnika" >Texnika</option>
+        <option value="uskunalar" data-category="uskunalar" >Asbob uskunalar</option>
+        <option value="transport" data-category="transport" >Transport</option>
+        <!-- <option value="tarixiy-buyumlar" data-category="tarixiy-buyumlar" >Tarixiy buyumlar</option> -->
+        <option value="Qolmehnati" data-category="qolmehnati" >Qo'l san'ati</option>
+        <option value="kochmas-mulk" data-category="kochmas-mulk" >Ko‘chmas mulk</option>
+        <option value="qishloq" data-category="qishloq-xojaligi" >Qishloq xo'jaligi</option>
+        <option value="maydonlar" data-category="maydonlar" >Yer maydonlari</option>
+      </select>
+
+      <textarea name="tavsilot" rows="3" placeholder="Tafsilot" required></textarea>
+      <input type="number" name="narx" placeholder="Narxi (so'm)" required>
+      <input type="file" name="rasm" required>
+      <input type="text" name="number" placeholder="Telefon raqam" required>
+      <input type="text" name="telegram" placeholder="Telegram username" required>
+
+      <button type="submit">E’lonni joylash</button>
+      
+    </form>
+</section>
+
+
+<section id="profile" class="page" style="display:none">
+    <header class="topbar">
+      <input type="text" placeholder="Elonlaringizdan qidiring">
+      <button type="submit" class="search-btn">Qidirish</button>
+    </header>
+    <div id="my-ads" class="ads-grid"></div>
+  </section>
+</div>
+
+<section id="profile-panel" class="page" style="display:none;">
+  <div class="profile-buttons">
+    <div class="profile-button">
+      <a data-tab="mode">
+        <div>
+          <img src="Ellipse 38.svg">
+          <p>Rejim</p>
+        </div>
+      </a>
+    </div>
+    <div class="profile-button" data-tab="language">
+      <a data-tab="language">
+        <div>
+          <img src="Vector.svg">
+          <p>Til</p>
+        </div>
+      </a>
+    </div>
+    <div class="profile-button logoutBtn" id="logoutBtn" data-tab="logout">
+      <a data-tab="logoutBtn">
+        <div class="logout-btn-container">
+          <img src="Icon (2).svg">
+          <p>Chiqish</p>
+        </div>
+      </a>
+    </div>
+</section>
+
+</main>
+
+  <script src="script.js"></script>
+  <script src="carousel.js"></script>
+  <script src="profile.js"></script>
+
+</body>
+</html>
