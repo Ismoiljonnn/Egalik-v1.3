@@ -196,11 +196,16 @@ background-color: #c0392b;
   border-radius: var(--radius);
   cursor: pointer;
   transition: background 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.category-card:hover {
-  background: #222633;
+.category-card img {
+  height: 40px;
+  margin-right: 10px;
 }
+
 
 /* --- Responsive --- */
 
@@ -425,4 +430,5 @@ form button {
   .categories {
     grid-template-columns: 1fr;
   }
+
 }
