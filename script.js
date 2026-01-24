@@ -202,62 +202,62 @@ registerBtn.addEventListener("click", function(e) {
         });
         
 
-// function createAdCard(item, isMyAd = false) {
-//   const btnClass = item.holat === "sotiladi" ? "green" : "blue";
-
-//   const BASE_URL = "https://egalik-api-v01.onrender.com";
-
-//   const imgSrc = item.rasm
-//     ? (item.rasm.startsWith("http") ? item.rasm : `${BASE_URL}${item.rasm}`)
-//     : "images/noimage.jpg";
-
-//   return `
-//     <article class="ad-card" data-id="${item.id}">
-//       <img src="${imgSrc}" alt="${item.title}">
-//       <h3>${item.title}</h3>
-//       <p>Tavsilot: ${item.tavsilot}</p>
-//       <p>Narxi: ${item.narx} so'm</p>
-//       <p>Telefon raqam: ${item.number}</p>
-//       <p>Telegram: ${item.telegram}</p>
-//       <div class="ad-actions">
-//         <button class="badge ${btnClass}">${item.holat}</button>
-//       </div>
-//       ${isMyAd ? `
-//           <button class="delete-btn" data-id="${item.id}">O‘chirish</button>
-//         ` : ""}
-//     </article>
-//   `;
-// }
-
-// 2. Yagona createAdCard funksiyasi
 function createAdCard(item, isMyAd = false) {
-    const btnClass = item.holat === "sotiladi" ? "green" : "blue";
-    // Rasm URL manzili xatolarini tekshirish
-    const imgSrc = item.rasm ? 
-        (item.rasm.startsWith("http") ? item.rasm : `${API_BASE}${item.rasm}`) : 
-        "images/noimage.jpg";
+  const btnClass = item.holat === "sotiladi" ? "green" : "blue";
 
-    return `
-        <article class="ad-card" data-id="${item.id}">
-            <div class="card-img-wrap">
-                <img src="${imgSrc}" alt="${item.title}" loading="lazy">
-            </div>
-            <div class="card-info">
-                <h3>${item.title}</h3>
-                <p class="price">${Number(item.narx).toLocaleString()} so'm</p>
-                <p>Tavsilot: ${item.tavsilot}</p>
-                <p>Telefon raqam: ${item.number}</p>
-                <div class="ad-actions">
-                    <span class="badge ${btnClass}">${item.holat}</span>
-                    <a style="color: #007bff; text-decoration: none;" href="https://t.me/${item.telegram.replace('@','')}" class="tg-link">Telegram</a>
-                </div>
-                ${isMyAd ? `<button class="delete-btn" data-id="${item.id}">O‘chirish</button>` : ""}
-            </div>
-        </article>
-        
-        
-    `;
+  const BASE_URL = "https://egalik-api-v01.onrender.com";
+
+  const imgSrc = item.rasm
+    ? (item.rasm.startsWith("http") ? item.rasm : `${BASE_URL}${item.rasm}`)
+    : "images/noimage.jpg";
+
+  return `
+    <article class="ad-card" data-id="${item.id}">
+      <img src="${imgSrc}" alt="${item.title}">
+      <h3>${item.title}</h3>
+      <p>Tavsilot: ${item.tavsilot}</p>
+      <p>Narxi: ${item.narx} so'm</p>
+      <p>Telefon raqam: ${item.number}</p>
+      <p>Telegram: ${item.telegram}</p>
+      <div class="ad-actions">
+        <button class="badge ${btnClass}">${item.holat}</button>
+      </div>
+      ${isMyAd ? `
+          <button class="delete-btn" data-id="${item.id}">O‘chirish</button>
+        ` : ""}
+    </article>
+  `;
 }
+
+// // 2. Yagona createAdCard funksiyasi
+// function createAdCard(item, isMyAd = false) {
+//     const btnClass = item.holat === "sotiladi" ? "green" : "blue";
+//     // Rasm URL manzili xatolarini tekshirish
+//     const imgSrc = item.rasm ? 
+//         (item.rasm.startsWith("http") ? item.rasm : `${API_BASE}${item.rasm}`) : 
+//         "images/noimage.jpg";
+
+//     return `
+//         <article class="ad-card" data-id="${item.id}">
+//             <div class="card-img-wrap">
+//                 <img src="${imgSrc}" alt="${item.title}" loading="lazy">
+//             </div>
+//             <div class="card-info">
+//                 <h3>${item.title}</h3>
+//                 <p class="price">${Number(item.narx).toLocaleString()} so'm</p>
+//                 <p>Tavsilot: ${item.tavsilot}</p>
+//                 <p>Telefon raqam: ${item.number}</p>
+//                 <div class="ad-actions">
+//                     <span class="badge ${btnClass}">${item.holat}</span>
+//                     <a style="color: #007bff; text-decoration: none;" href="https://t.me/${item.telegram.replace('@','')}" class="tg-link">Telegram</a>
+//                 </div>
+//                 ${isMyAd ? `<button class="delete-btn" data-id="${item.id}">O‘chirish</button>` : ""}
+//             </div>
+//         </article>
+        
+        
+//     `;
+// }
 
 
           const searchInput = document.getElementById("searchInput");
@@ -455,3 +455,4 @@ newForm.addEventListener("submit", async function (e) {
     newAddBtn.disabled = false;
   }
 });
+
