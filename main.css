@@ -207,6 +207,11 @@ background-color: #c0392b;
   margin-right: 10px;
 }
 
+.category-card:hover {
+  background: #222633;
+}
+
+
 
 /* --- Responsive --- */
 
@@ -433,4 +438,5 @@ form button {
   }
 
 }
+
 
