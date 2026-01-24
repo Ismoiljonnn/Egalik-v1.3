@@ -230,20 +230,24 @@ registerBtn.addEventListener("click", function(e) {
 function createAdCard(item, isMyAd = false) {
     const btnClass = item.holat === "sotiladi" ? "green" : "blue";
     
-    // Rasm URL manzili xatolarini tekshirish
     const imgSrc = item.rasm ? 
         (item.rasm.startsWith("http") ? item.rasm : `${API_BASE}${item.rasm}`) : 
         "images/noimage.jpg";
 
-    // --- TELEGRAM LINKINI TEKSHIRISH ---
-    // Agar telegram username bo'lsa tugma kodini generatsiya qilamiz, bo'lmasa bo'sh string
-    const tgButton = (item.telegram && item.telegram !== "null" && item.telegram.trim() !== "") 
-        ? `<a style="color: #007bff; text-decoration: none; background-color: rgba(0, 123, 255, 0.1); border-radius: 50px; border: none; padding: 5px 15px; font-weight: 600;" 
-              href="https://t.me/${item.telegram.replace('@','')}" 
-              target="_blank" 
-              class="tg-link">Telegram</a>` 
-        : ""; 
-    // -----------------------------------
+    // --- TELEGRAMNI TEKSHIRISH VA TUGMANI YARATISH ---
+    let telegramHTML = ""; // Dastlab bo'sh
+    
+    // Agar username bor bo'lsa, tugma HTML kodi bilan to'ldiramiz
+    if (item.telegram && item.telegram !== "null" && item.telegram.trim() !== "") {
+        telegramHTML = `
+            <a style="color: #007bff; text-decoration: none; background-color: lightblue; border-radius: 50px; border: none; padding: 5px 10px; font-weight: 600;" 
+               href="https://t.me/${item.telegram.replace('@','')}" 
+               target="_blank" 
+               class="tg-link">
+               Telegram
+            </a>`;
+    }
+    // ------------------------------------------------
 
     return `
         <article class="ad-card" data-id="${item.id}">
@@ -257,8 +261,7 @@ function createAdCard(item, isMyAd = false) {
                 <p>Telefon raqam: ${item.number}</p>
                 <div class="ad-actions">
                     <span class="badge ${btnClass}">${item.holat}</span>
-                    ${tgButton} 
-                </div>
+                    ${telegramHTML} </div>
                 ${isMyAd ? `<button class="delete-btn" data-id="${item.id}">O‘chirish</button>` : ""}
             </div>
         </article>
@@ -461,5 +464,6 @@ newForm.addEventListener("submit", async function (e) {
   }
 
 });
+
 
 
