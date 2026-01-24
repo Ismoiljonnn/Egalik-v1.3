@@ -196,58 +196,15 @@ registerBtn.addEventListener("click", function(e) {
 //   `;
 // }
 
-// // 2. Yagona createAdCard funksiyasi
-// function createAdCard(item, isMyAd = false) {
-//     const btnClass = item.holat === "sotiladi" ? "green" : "blue";
-//     // Rasm URL manzili xatolarini tekshirish
-//     const imgSrc = item.rasm ? 
-//         (item.rasm.startsWith("http") ? item.rasm : `${API_BASE}${item.rasm}`) : 
-//         "images/noimage.jpg";
-
-    
-
-//     return `
-//         <article class="ad-card" data-id="${item.id}">
-//             <div class="card-img-wrap">
-//                 <img src="${imgSrc}" alt="${item.title}" loading="lazy">
-//             </div>
-//             <div class="card-info">
-//                 <h3>${item.title}</h3>
-//                 <p class="price">${Number(item.narx).toLocaleString()} so'm</p>
-//                 <p>Tavsilot: ${item.tavsilot}</p>
-//                 <p>Telefon raqam: ${item.number}</p>
-//                 <div class="ad-actions">
-//                     <span class="badge ${btnClass}">${item.holat}</span>
-//                     <a style="color: #007bff; text-decoration: none; backgroud-color: lightblue; border-radius: 50%; border: none; padding: 5px 10px" href="https://t.me/${item.telegram.replace('@','')}" class="tg-link">Telegram</a>
-//                 </div>
-//                 ${isMyAd ? `<button class="delete-btn" data-id="${item.id}">O‘chirish</button>` : ""}
-//             </div>
-//         </article>
-//     `;
-// }
-
 // 2. Yagona createAdCard funksiyasi
 function createAdCard(item, isMyAd = false) {
     const btnClass = item.holat === "sotiladi" ? "green" : "blue";
-    
+    // Rasm URL manzili xatolarini tekshirish
     const imgSrc = item.rasm ? 
         (item.rasm.startsWith("http") ? item.rasm : `${API_BASE}${item.rasm}`) : 
         "images/noimage.jpg";
 
-    // --- TELEGRAMNI TEKSHIRISH VA TUGMANI YARATISH ---
-    let telegramHTML = ""; // Dastlab bo'sh
     
-    // Agar username bor bo'lsa, tugma HTML kodi bilan to'ldiramiz
-    if (item.telegram && item.telegram !== "null" && item.telegram.trim() !== "") {
-        telegramHTML = `
-            <a style="color: #007bff; text-decoration: none; font-weight: 500;" 
-               href="https://t.me/${item.telegram.replace('@','')}" 
-               target="_blank" 
-               class="tg-link">
-               Telegram
-            </a>`;
-    }
-    // ------------------------------------------------
 
     return `
         <article class="ad-card" data-id="${item.id}">
@@ -261,12 +218,14 @@ function createAdCard(item, isMyAd = false) {
                 <p>Telefon raqam: ${item.number}</p>
                 <div class="ad-actions">
                     <span class="badge ${btnClass}">${item.holat}</span>
-                    ${telegramHTML} </div>
+                    <a style="color: #007bff; text-decoration: none; backgroud-color: lightblue; border-radius: 50%; border: none; padding: 5px 10px" href="https://t.me/${item.telegram.replace('@','')}" class="tg-link">Telegram</a>
+                </div>
                 ${isMyAd ? `<button class="delete-btn" data-id="${item.id}">O‘chirish</button>` : ""}
             </div>
         </article>
     `;
 }
+
 
           const searchInput = document.getElementById("searchInput");
       const searchBtn = document.getElementById("searchBtn");
@@ -464,6 +423,7 @@ newForm.addEventListener("submit", async function (e) {
   }
 
 });
+
 
 
 
