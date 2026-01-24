@@ -218,7 +218,7 @@ function createAdCard(item, isMyAd = false) {
                 <p>Telefon raqam: ${item.number}</p>
                 <div class="ad-actions">
                     <span class="badge ${btnClass}">${item.holat}</span>
-                    <a style="color: #007bff; text-decoration: none; backgroud-color: lightblue; border-radius: 50%; border: none; padding: 5px 10px" href="https://t.me/${item.telegram.replace('@','')}" class="tg-link">Telegram</a>
+                    <a style="color: #007bff; text-decoration: none; href="https://t.me/${item.telegram.replace('@','')}" class="tg-link">Telegram</a>
                 </div>
                 ${isMyAd ? `<button class="delete-btn" data-id="${item.id}">O‘chirish</button>` : ""}
             </div>
@@ -423,6 +423,7 @@ newForm.addEventListener("submit", async function (e) {
   }
 
 });
+
 
 
 
