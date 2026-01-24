@@ -204,8 +204,6 @@ function createAdCard(item, isMyAd = false) {
         (item.rasm.startsWith("http") ? item.rasm : `${API_BASE}${item.rasm}`) : 
         "images/noimage.jpg";
 
-    
-
     return `
         <article class="ad-card" data-id="${item.id}">
             <div class="card-img-wrap">
@@ -218,11 +216,13 @@ function createAdCard(item, isMyAd = false) {
                 <p>Telefon raqam: ${item.number}</p>
                 <div class="ad-actions">
                     <span class="badge ${btnClass}">${item.holat}</span>
-                    <a style="color: #007bff; text-decoration: none; href="https://t.me/${item.telegram.replace('@','')}" class="tg-link">Telegram</a>
+                    <a style="color: #007bff; text-decoration: none;" href="https://t.me/${item.telegram.replace('@','')}" class="tg-link">Telegram</a>
                 </div>
                 ${isMyAd ? `<button class="delete-btn" data-id="${item.id}">O‘chirish</button>` : ""}
             </div>
         </article>
+        
+        
     `;
 }
 
@@ -423,6 +423,7 @@ newForm.addEventListener("submit", async function (e) {
   }
 
 });
+
 
 
 
