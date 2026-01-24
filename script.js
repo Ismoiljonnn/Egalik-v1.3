@@ -240,7 +240,7 @@ function createAdCard(item, isMyAd = false) {
     // Agar username bor bo'lsa, tugma HTML kodi bilan to'ldiramiz
     if (item.telegram && item.telegram !== "null" && item.telegram.trim() !== "") {
         telegramHTML = `
-            <a style="color: #007bff; text-decoration: none; background-color: lightblue; border-radius: 50px; border: none; padding: 5px 10px; font-weight: 600;" 
+            <a style="color: #007bff; text-decoration: none; font-weight: 500;" 
                href="https://t.me/${item.telegram.replace('@','')}" 
                target="_blank" 
                class="tg-link">
@@ -464,6 +464,7 @@ newForm.addEventListener("submit", async function (e) {
   }
 
 });
+
 
 
 
