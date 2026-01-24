@@ -202,7 +202,8 @@ background-color: #c0392b;
 }
 
 .category-card img {
-  height: 40px;
+  width: 40px;
+  height: auto;
   margin-right: 10px;
 }
 
@@ -432,3 +433,4 @@ form button {
   }
 
 }
+
