@@ -23,11 +23,6 @@
             <i class='bx bx-lock'></i> 
         </div>
 
-        <!-- <div class="remember-forgot">
-            <label><input type="checkbox"> Remember me</label>
-            <a href="#">Forgot password?</a>
-        </div> -->
-
         <button id="loginBtn" type="submit" class="btn">Login</button>
 
         <div class="register-link">
@@ -35,6 +30,7 @@
         </div>
     </form>
 </div>
+
 <script>
     const API_BASE = "https://egalik-api-v01.onrender.com/";
     const form = document.getElementById("loginForm");
@@ -53,10 +49,12 @@
 
         // Tugmani bosib bo'lmaydigan qilib turamiz
         btn.disabled = true;
-        btn.innerText = "Kirilmoqda...";
+        btn.innerText = "Tekshirilmoqda...";
 
-        const username = form.elements["username"].value;
-        const password = form.elements["password"].value;
+        // MUHIM: .trim() funksiyasi qo'shildi!
+        // Bu login va parolning boshi va oxiridagi bo'sh joylarni olib tashlaydi
+        const username = form.elements["username"].value.trim();
+        const password = form.elements["password"].value.trim();
 
         try {
             const res = await fetch(API_BASE + "auth/login/", {
@@ -67,7 +65,7 @@
                 body: JSON.stringify({ username, password })
             });
 
-            // JSON o'qishda xato bo'lsa (masalan server 500 qaytarsa), bo'sh obyekt olamiz
+            // JSON o'qishda xato bo'lsa, bo'sh obyekt olamiz
             const data = await res.json().catch(() => ({}));
 
             if (res.ok) {
@@ -83,34 +81,35 @@
                     }
 
                     // Muvaffaqiyatli o'tish
+                    // alert("Login muvaffaqiyatli! ✅"); // Xohlasangiz yoqing
                     window.location.replace("index.html");
                 } else {
                     alert("Xatolik: Server token qaytarmadi.");
                     btn.disabled = false;
-                    btn.innerText = "Kirish";
+                    btn.innerText = "Login";
                 }
             } else {
                 // Xatolikni chiroyli chiqarish
                 let errorMsg = "Login yoki parol xato!";
                 
+                // Serverdan kelgan aniq xabarni ko'rsatish
                 if (data.detail) errorMsg = data.detail;
                 else if (data.message) errorMsg = data.message;
                 else if (data.non_field_errors) errorMsg = data.non_field_errors[0];
 
-                alert(errorMsg);
+                // Foydalanuvchiga yuborilgan ma'lumotni ham ko'rsatamiz (tekshirish uchun)
+                alert(`Xatolik: ${errorMsg}\n\nSiz kiritgan login: '${username}'`);
                 
                 btn.disabled = false;
-                btn.innerText = "Kirish";
+                btn.innerText = "Login";
             }
         } catch (err) {
             console.error("Login Error:", err);
             alert("Serverga ulanishda xatolik yuz berdi. Internetni tekshiring.");
             btn.disabled = false;
-            btn.innerText = "Kirish";
+            btn.innerText = "Login";
         }
     });
 </script>
 </body>
-
 </html>
-
