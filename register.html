@@ -19,11 +19,6 @@
         </div>
 
         <div class="input-box">
-            <input type="email" name="email" placeholder="Email (optional)">
-            <i class='bx bx-envelope'></i>
-        </div>
-
-        <div class="input-box">
             <input type="password" name="password" placeholder="Password" required>
             <i class='bx bx-lock'></i> 
         </div>
@@ -32,10 +27,6 @@
             <input type="password" name="repeat" placeholder="Repeat Password" required>
             <i class='bx bx-lock'></i> 
         </div>
-
-        <!-- <div class="remember-forgot">
-            <label><input type="checkbox"> Remember me</label>
-        </div> -->
 
         <button type="submit" id="regBtn" class="btn">ro'yhatdan o'tish</button>
 
@@ -63,14 +54,17 @@ form.addEventListener("input", () => {
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // 1. Tugmani bloklaymiz (qayta bosishni oldini olish uchun)
+    // 1. Tugmani bloklaymiz
     btn.disabled = true;
     btn.innerText = "Yuborilmoqda...";
 
     // 2. Ma'lumotlarni yig'ish
     const formData = new FormData(form);
-    const password = formData.get("password");
-    const repeat = formData.get("repeat"); // Input name="repeat"
+    
+    // .trim() bu juda muhim - foydalanuvchi bilmasdan probel qo'shib qo'ysa tozalaydi
+    const username = formData.get("username").trim();
+    const password = formData.get("password").trim();
+    const repeat = formData.get("repeat").trim();
 
     // Frontend password tekshiruvi
     if (password !== repeat) {
@@ -80,49 +74,44 @@ form.addEventListener("submit", async (e) => {
         return;
     }
 
-    // Backend kutgan formatni tayyorlash
+    // Backend kutgan format (Email yo'q)
     const payload = {
-        username: formData.get("username"),
-        email: formData.get("email") || "",
+        username: username,
         password: password,
-        password2: repeat // Backend aynan 'password2' ni kutadi
+        password2: repeat 
     };
 
     try {
-        // 3. So'rov yuborish (Token kerak emas, Cookie ham kerak emas)
+        // 3. So'rov yuborish
         const res = await fetch(API_BASE + "auth/register/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
-                // 'Authorization' shart emas, chunki user hali kirmagan
             },
             body: JSON.stringify(payload)
-            // credentials: "include" <-- BU OLIB TASHLANDI ❌
         });
 
-        // Javobni o'qish (JSON xato bo'lsa, bo'sh object olamiz)
+        // Javobni o'qish
         const data = await res.json().catch(() => ({}));
 
         if (res.ok) {
-            alert("Ro‘yxatdan o‘tish muvaffaqiyatli! \nEndi login sahifasiga o'tib, profilingizga kiring.");
+            alert("Muvaffaqiyatli! \nEndi login sahifasiga o'tib, profilingizga kiring.");
             window.location.href = "login.html";
         } else {
-            // 4. Xatolarni chiroyli chiqarish
+            // 4. Xatolarni chiqarish
             let errorMsg = "Xatolik yuz berdi:\n";
 
             if (data.username) errorMsg += "- Username: " + data.username.join(", ") + "\n";
             if (data.password) errorMsg += "- Parol: " + data.password.join(", ") + "\n";
-            if (data.email) errorMsg += "- Email: " + data.email.join(", ") + "\n";
             if (data.detail) errorMsg += "- " + data.detail + "\n";
             
-            // Agar aniq xato topilmasa
+            // Agar aniq xato topilmasa to'liq jsonni chiqaramiz
             if (errorMsg === "Xatolik yuz berdi:\n") {
                 errorMsg += JSON.stringify(data);
             }
 
             alert(errorMsg);
             
-            // Tugmani qayta yoqamiz
             btn.disabled = false;
             btn.innerText = "Ro'yhatdan o'tish";
         }
@@ -136,7 +125,5 @@ form.addEventListener("submit", async (e) => {
     }
 });
 </script>
-    
 </body>
 </html>
-
