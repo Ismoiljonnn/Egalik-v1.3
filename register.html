@@ -46,10 +46,12 @@
 </div>
 
 <script>
-const API_BASE = "https://egalik-api-v01.onrender.com/"; // server URL
+const API_BASE = "https://egalik-api-v01.onrender.com/"; // Server URL
 
 const form = document.getElementById("regForm");
 const btn = document.getElementById("regBtn");
+
+// Boshlanishida tugmani o'chirib turamiz
 btn.disabled = true;
 
 // Tugmani faqat form valid bo'lsa faollashtirish
@@ -61,47 +63,80 @@ form.addEventListener("input", () => {
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // Form ma'lumotlarini olish
-    const formData = Object.fromEntries(new FormData(form).entries());
+    // 1. Tugmani bloklaymiz (qayta bosishni oldini olish uchun)
+    btn.disabled = true;
+    btn.innerText = "Yuborilmoqda...";
+
+    // 2. Ma'lumotlarni yig'ish
+    const formData = new FormData(form);
+    const password = formData.get("password");
+    const repeat = formData.get("repeat"); // Input name="repeat"
 
     // Frontend password tekshiruvi
-    if(formData.password !== formData.repeat){
+    if (password !== repeat) {
         alert("Parollar mos kelmadi!");
+        btn.disabled = false;
+        btn.innerText = "Ro'yhatdan o'tish";
         return;
     }
 
+    // Backend kutgan formatni tayyorlash
+    const payload = {
+        username: formData.get("username"),
+        email: formData.get("email") || "",
+        password: password,
+        password2: repeat // Backend aynan 'password2' ni kutadi
+    };
+
     try {
-        // Backendga POST request
+        // 3. So'rov yuborish (Token kerak emas, Cookie ham kerak emas)
         const res = await fetch(API_BASE + "auth/register/", {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-            username: formData.username,
-            email: formData.email || "",
-            password: formData.password,
-            password2: formData.repeat
-        }),
-        credentials: "include"
-    });
+            headers: {
+                "Content-Type": "application/json"
+                // 'Authorization' shart emas, chunki user hali kirmagan
+            },
+            body: JSON.stringify(payload)
+            // credentials: "include" <-- BU OLIB TASHLANDI ❌
+        });
 
-        if(res.ok){
-            alert("Ro‘yxatdan o‘tish muvaffaqiyatli! Endi login qiling.");
+        // Javobni o'qish (JSON xato bo'lsa, bo'sh object olamiz)
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok) {
+            alert("Ro‘yxatdan o‘tish muvaffaqiyatli! \nEndi login sahifasiga o'tib, profilingizga kiring.");
             window.location.href = "login.html";
         } else {
-            const err = await res.json();
-            if(err.password2){
-                alert("Xato: " + err.password2.join(", "));
-            } else if(err.username){
-                alert("Xato: " + err.username.join(", "));
-            } else {
-                alert("Xato: " + JSON.stringify(err));
+            // 4. Xatolarni chiroyli chiqarish
+            let errorMsg = "Xatolik yuz berdi:\n";
+
+            if (data.username) errorMsg += "- Username: " + data.username.join(", ") + "\n";
+            if (data.password) errorMsg += "- Parol: " + data.password.join(", ") + "\n";
+            if (data.email) errorMsg += "- Email: " + data.email.join(", ") + "\n";
+            if (data.detail) errorMsg += "- " + data.detail + "\n";
+            
+            // Agar aniq xato topilmasa
+            if (errorMsg === "Xatolik yuz berdi:\n") {
+                errorMsg += JSON.stringify(data);
             }
+
+            alert(errorMsg);
+            
+            // Tugmani qayta yoqamiz
+            btn.disabled = false;
+            btn.innerText = "Ro'yhatdan o'tish";
         }
-    } catch(err){
-        console.error(err);
-        alert("Server bilan bog‘lanishda xato");
+
+    } catch (err) {
+        console.error("Register Error:", err);
+        alert("Server bilan bog‘lanishda xato. Internetni tekshiring.");
+        
+        btn.disabled = false;
+        btn.innerText = "Ro'yhatdan o'tish";
     }
 });
 </script>
+    
 </body>
 </html>
+
