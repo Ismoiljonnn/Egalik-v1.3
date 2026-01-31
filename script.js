@@ -1,360 +1,316 @@
-      const API_BASE = "https://egalik-api-v01.onrender.com/";
+/**
+ * GLOBAL SOZLAMALAR
+ */
+const API_BASE = "https://egalik-api-v01.onrender.com/";
 
-//       // script.js ning boshiga qo'shing
-// async function checkAuth() {
-//     try {
-//         const res = await fetch(API_BASE + "auth/user/", { // Serverda user ma'lumotlarini beruvchi endpoint
-//             method: "GET",
-//             credentials: "include"
-//         });
-
-//         if (!res.ok) {
-//             // Agar foydalanuvchi login qilmagan bo'lsa (401 yoki 403)
-//             window.location.href = "login.html";
-//         } else {
-//             console.log("Tizimga kirilgan ✅");
-//             const userData = await res.json();
-//             // Agar xohlasangiz, foydalanuvchi ismini ekranga chiqaring:
-//             // document.getElementById("userName").innerText = userData.username;
-//         }
-//     } catch (err) {
-//         console.error("Auth check xatosi:", err);
-//         // Server bilan bog'lanish bo'lmasa, majburan loginga haydamaslik ma'qul (debug uchun)
-//     }
-// }
-
-//       // Sahifa yuklanganda tekshiramiz
-//       document.addEventListener("DOMContentLoaded", () => {
-//           checkAuth(); // <-- MUHIM: Birinchi navbatda tekshiramiz
-//           loadProducts();
-//       });
-
-     
-
-      const loader = document.getElementById("global-loader");
-      const loaderText = loader.querySelector("p");
-
-      // sahifa yuklanganda
-      window.addEventListener("load", async () => {
-
-          // 15 sekunddan keyin text o'zgaradi
-          const slowTextTimer = setTimeout(() => {
-              loaderText.innerText = "Sahifa yuklanmoqda...";
-          }, 15000);
-
-          try {
-              await fetch(API_BASE + "health", {
-                  credentials: "include"
-              });
-          } catch (e) {
-              // jim, baribir loadingni yopamiz
-          } finally {
-              clearTimeout(slowTextTimer);
-
-              // minimal 1.2s ko‘rinib turadi (flicker bo‘lmasligi uchun)
-              setTimeout(() => {
-                  loader.classList.add("hide");
-              }, 1200);
-          }
-      });
-
-
-       // Elementni ID orqali ushlaymiz
+// DOM Elementlarni oldindan tanlab olamiz
+const loader = document.getElementById("global-loader");
+const adsGridHome = document.querySelector("#home .ads-grid");
+const adsGridProfile = document.querySelector("#profile .ads-grid");
 const registerBtn = document.getElementById("registerBtn");
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+const addForm = document.getElementById("addForm");
+const navLinks = document.querySelectorAll(".sidebar nav a");
 
-// Click hodisasini eshitamiz
-registerBtn.addEventListener("click", function(e) {
-    // Agar <a> tegi sahifani yangilab yubormasligi uchun e.preventDefault() qo'shish mumkin
-    e.preventDefault();
-    
-    // Sahifani o'zgartiramiz
-    window.location.href = "register.html";
-});
+/**
+ * 1. AUTENTIFIKATSIYA FUNKSIYALARI
+ */
 
-
-        // Navbar switching
-        document.querySelectorAll(".sidebar nav a").forEach(link => {
-          link.addEventListener("click", () => {
-            document.querySelectorAll(".sidebar nav a").forEach(a => a.classList.remove("active"));
-            link.classList.add("active");
-
-            const page = link.dataset.page;
-            document.querySelectorAll(".page").forEach(p => p.style.display = "none");
-            document.getElementById(page).style.display = "block";
-
-            // Agar "Mening e’lonlarim" bo‘lsa, faqat userning e’lonlarini yuklaymiz
-            if(page === "profile") loadMyAds();
-          });
-        });
-
-
-        
-
-
-          // Load all products  
-          async function loadProducts() {
-            try {
-              const res = await fetch(API_BASE, { credentials: "include" });
-              if (!res.ok) throw new Error("Network response not ok");
-              const data = await res.json();
-
-              const grid = document.querySelector("#home .ads-grid");
-             grid.innerHTML = data.map(item => createAdCard(item, false)).join("");
-              
-            } catch(err) {
-              console.error("Fetch error:", err);
-            }
-          }
-
-          
-
-
-             // Load my ads (user's own products)
-          async function loadMyAds() {
-              try {
-                  // fetch natijasini res ga saqlaymiz
-                  const res = await fetch(API_BASE + "mening_elonlarim/", { 
-                      method: "GET",
-                      credentials: "include" // cookie yuboradi
-                  });
-
-                  if (!res.ok) throw new Error("Network response not ok");
-
-                  const data = await res.json();
-
-                  const grid = document.querySelector("#profile .ads-grid");
-
-                  // data bo'sh yoki undefined bo'lsa
-                  if (!data || data.length === 0) {
-                      grid.innerHTML = "<p>Hozircha sizning e’lonlaringiz yo‘q</p>";
-                      return;
-                  }
-
-                  // createAdCard funksiyasi bilan HTML yaratish
-                  grid.innerHTML = data.map(item => createAdCard(item, true)).join("");
-              } catch(err) {
-                  console.error("Fetch error:", err);
-                  const grid = document.querySelector("#profile .ads-grid");
-                  if (grid) grid.innerHTML = "<p>Serverga ulanishda xato</p>";
-              }
-          }
-
-
-
-
-        // Create ad card HTML
-        function createAdCard(item) {
-          // Holat button rangini aniqlaymiz
-          const btnClass = item.holat === "sotiladi" ? "green" : "ijaraga" ? "blue" : "blue";
-
-          // Rasmni to‘liq URL bilan ishlatamiz, default rasm bilan
-        //   const imgSrc = item.rasm && item.rasm.startsWith("http") ? item.rasm : "images/noimage.jpg";  
-
-          return `
-            <article class="ad-card">
-              <img src="${item.rasm}" alt="${item.title}">
-              <h3>${item.title}</h3>
-              <p>Tavsilot: ${item.tavsilot}</p>
-              <p>Narxi: ${item.narx} so'm</p>
-              <p>Telefon raqam: ${item.number}</p>
-              <p>Telegram: ${item.telegram}</p>
-              <div class="ad-actions">
-                <button class="badge ${btnClass}">
-                  ${item.holat}
-                </button>
-              </div>
-            </article>
-          `;
-        }
-
-
-
-        // Initial load
-        document.addEventListener("DOMContentLoaded", () => {
-          loadProducts();
-        });
-
-          // Add form
-          document.getElementById("addForm").addEventListener("submit", async function(e){
-            e.preventDefault();
-            const formData = new FormData(this);
-
-            try {
-                const res = await fetch(API_BASE + "add/", {
-                    method: "POST",
-                    body: formData,
-                    credentials: "include"
-                });
-
-                if(res.ok){
-                    alert("E’lon muvaffaqiyatli qo‘shildi!");
-                    this.reset();
-                    loadProducts();
-                    loadMyAds();
-                } else {
-                    const errText = await res.text();
-                    alert("Xato: E’lon qo‘shilmadi\n" + errText);
-                }
-            } catch(err){
-                console.error("Add fetch error:", err);
-                alert("Serverga ulanishda xato");
-            }
-        });
-        
-
-function createAdCard(item, isMyAd = false) {
-  const btnClass = item.holat === "sotiladi" ? "green" : "blue";
-
-  const BASE_URL = "https://egalik-api-v01.onrender.com";
-
-  const imgSrc = item.rasm
-    ? (item.rasm.startsWith("http") ? item.rasm : `${BASE_URL}${item.rasm}`)
-    : "images/noimage.jpg";
-
-  return `
-    <article class="ad-card" data-id="${item.id}">
-      <img src="${imgSrc}" alt="${item.title}">
-      <h3>${item.title}</h3>
-      <p>Tavsilot: ${item.tavsilot}</p>
-      <p>Narxi: ${item.narx} so'm</p>
-      <p>Telefon raqam: ${item.number}</p>
-      <p>Telegram: ${item.telegram}</p>
-      <div class="ad-actions">
-        <button class="badge ${btnClass}">${item.holat}</button>
-      </div>
-      ${isMyAd ? `
-          <button class="delete-btn" data-id="${item.id}">O‘chirish</button>
-        ` : ""}
-    </article>
-  `;
+// Tokenni olish
+function getToken() {
+    return localStorage.getItem("accessToken");
 }
 
-// // 2. Yagona createAdCard funksiyasi
-// function createAdCard(item, isMyAd = false) {
-//     const btnClass = item.holat === "sotiladi" ? "green" : "blue";
-//     // Rasm URL manzili xatolarini tekshirish
-//     const imgSrc = item.rasm ? 
-//         (item.rasm.startsWith("http") ? item.rasm : `${API_BASE}${item.rasm}`) : 
-//         "images/noimage.jpg";
+// Tizimdan chiqish (Logout)
+function logout() {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("username");
+    localStorage.removeItem("userId");
+    window.location.href = "login.html";
+}
 
-//     return `
-//         <article class="ad-card" data-id="${item.id}">
-//             <div class="card-img-wrap">
-//                 <img src="${imgSrc}" alt="${item.title}" loading="lazy">
-//             </div>
-//             <div class="card-info">
-//                 <h3>${item.title}</h3>
-//                 <p class="price">${Number(item.narx).toLocaleString()} so'm</p>
-//                 <p>Tavsilot: ${item.tavsilot}</p>
-//                 <p>Telefon raqam: ${item.number}</p>
-//                 <div class="ad-actions">
-//                     <span class="badge ${btnClass}">${item.holat}</span>
-//                     <a style="color: #007bff; text-decoration: none;" href="https://t.me/${item.telegram.replace('@','')}" class="tg-link">Telegram</a>
-//                 </div>
-//                 ${isMyAd ? `<button class="delete-btn" data-id="${item.id}">O‘chirish</button>` : ""}
-//             </div>
-//         </article>
+// Auth holatini tekshirish (UI uchun)
+function checkAuth() {
+    const token = getToken();
+    const userNameDisplay = document.getElementById("userName");
+
+    if (token) {
+        console.log("Foydalanuvchi tizimda ✅");
+        if (userNameDisplay) {
+            userNameDisplay.innerText = localStorage.getItem("username") || "Foydalanuvchi";
+        }
+        // Agar register tugmasi bo'lsa, uni yashirish yoki "Chiqish" ga aylantirish mumkin
+        if (registerBtn) {
+            registerBtn.innerText = "Chiqish";
+            registerBtn.onclick = (e) => {
+                e.preventDefault();
+                if(confirm("Tizimdan chiqmoqchimisiz?")) logout();
+            };
+        }
+    } else {
+        console.log("Mehmon rejimi 👤");
+    }
+}
+
+/**
+ * 2. DATA YUKLASH (FETCH) FUNKSIYALARI
+ */
+
+// Barcha e'lonlarni yuklash (Public - Token shart emas)
+async function loadProducts(query = "", category = "") {
+    try {
+        // URL qurish
+        let url = API_BASE;
+        const params = new URLSearchParams();
+        if (query) params.append("search", query);
+        if (category) params.append("kategoriya", category);
         
+        if (params.toString()) url += `?${params.toString()}`;
+
+        // Loading holati
+        if (adsGridHome) adsGridHome.innerHTML = '<div class="loader-spinner">Yuklanmoqda...</div>';
+
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Tarmoq xatosi");
+
+        const data = await res.json();
+
+        if (adsGridHome) {
+            if (!data || data.length === 0) {
+                adsGridHome.innerHTML = "<p style='text-align:center; width:100%'>E'lonlar topilmadi.</p>";
+            } else {
+                adsGridHome.innerHTML = data.map(item => createAdCard(item, false)).join("");
+            }
+        }
+    } catch (err) {
+        console.error("Load Error:", err);
+        if (adsGridHome) adsGridHome.innerHTML = "<p>Server bilan bog‘lanishda xato.</p>";
+    }
+}
+
+// Mening e'lonlarimni yuklash (Private - Token KERAK)
+async function loadMyAds() {
+    const token = getToken();
+    if (!token) return; // Token yo'q bo'lsa so'rov yubormaymiz
+
+    if (adsGridProfile) adsGridProfile.innerHTML = '<div class="loader-spinner">Yuklanmoqda...</div>';
+
+    try {
+        const res = await fetch(API_BASE + "mening_elonlarim/", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`, // <-- MUHIM: Token qo'shildi
+                "Content-Type": "application/json"
+            }
+        });
+
+        // 401 - Token eskirgan yoki noto'g'ri
+        if (res.status === 401) {
+            alert("Sessiya vaqti tugadi. Iltimos, qaytadan kiring.");
+            logout();
+            return;
+        }
+
+        if (!res.ok) throw new Error("Xatolik yuz berdi");
+
+        const data = await res.json();
+
+        if (adsGridProfile) {
+            if (!data || data.length === 0) {
+                adsGridProfile.innerHTML = "<p>Sizda hali e'lonlar yo'q.</p>";
+            } else {
+                // true parametri - bu mening e'lonim (o'chirish tugmasi chiqadi)
+                adsGridProfile.innerHTML = data.map(item => createAdCard(item, true)).join("");
+            }
+        }
+    } catch (err) {
+        console.error("My Ads Error:", err);
+        if (adsGridProfile) adsGridProfile.innerHTML = "<p>Ma'lumotlarni yuklashda xato.</p>";
+    }
+}
+
+/**
+ * 3. KARTA YARATISH (UI)
+ */
+function createAdCard(item, isMyAd = false) {
+    const btnClass = item.holat === "sotiladi" ? "green" : "blue";
+
+    // Rasmni to'g'rilash (Backend ba'zan to'liq URL, ba'zan /media/ beradi)
+    let imgSrc = "images/noimage.jpg";
+    if (item.rasm) {
+        if (item.rasm.startsWith("http")) {
+            imgSrc = item.rasm;
+        } else {
+            // Agar slash bilan boshlansa, API_BASE oxiridagi slashni olib tashlash kerak bo'lishi mumkin
+            // Lekin onrenderda odatda to'g'ri keladi.
+            // Xavfsizlik uchun oddiy bog'lash:
+            imgSrc = item.rasm; 
+        }
+    }
+
+    // Telegram username tozalash
+    const tgUser = item.telegram ? item.telegram.replace('@', '').replace('https://t.me/', '') : '';
+    const tgLink = tgUser ? `https://t.me/${tgUser}` : '#';
+
+    // Narxni formatlash
+    const formattedPrice = item.narx ? Number(item.narx).toLocaleString() : "Kelishilgan";
+
+    return `
+    <article class="ad-card" data-id="${item.id}">
+      <div class="card-img-container">
+          <img src="${imgSrc}" alt="${item.title}" onerror="this.src='images/noimage.jpg'">
+      </div>
+      <div class="card-body">
+          <h3>${item.title}</h3>
+          <p class="desc">Tavsilot: ${item.tavsilot}</p>
+          <p class="price">Narxi: <strong>${formattedPrice} so'm</strong></p>
+          <p class="phone"><i class='bx bx-phone'></i> ${item.number}</p>
+          
+          ${tgUser ? `<a href="${tgLink}" target="_blank" class="tg-link"><i class='bx bxl-telegram'></i> Telegram</a>` : ''}
+
+          <div class="ad-actions">
+            <span class="badge ${btnClass}">${item.holat}</span>
+          </div>
+
+          ${isMyAd ? `<button class="delete-btn" data-id="${item.id}">O‘chirish</button>` : ""}
+      </div>
+    </article>
+    `;
+}
+
+/**
+ * 4. HODISALAR (EVENTS)
+ */
+
+// Sahifa yuklanganda
+window.addEventListener("load", async () => {
+    // Loader logikasi
+    const loaderText = loader.querySelector("p");
+    const slowTextTimer = setTimeout(() => {
+        if(loaderText) loaderText.innerText = "Sahifa yuklanmoqda...";
+    }, 15000);
+
+    try {
+        // Backend sog'lomligini tekshirish (Helathz check)
+        await fetch(API_BASE + "healthz").catch(() => {});
+    } finally {
+        clearTimeout(slowTextTimer);
+        setTimeout(() => {
+            loader.classList.add("hide");
+        }, 1200);
+    }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    checkAuth();
+    loadProducts(); // Bosh sahifa yuklanadi
+});
+
+// Register tugmasi
+if (registerBtn && registerBtn.innerText !== "Chiqish") {
+    registerBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        window.location.href = "register.html";
+    });
+}
+
+// Navbar boshqaruvi
+navLinks.forEach(link => {
+    link.addEventListener("click", () => {
+        const page = link.dataset.page;
+
+        // Profilga kirish uchun token kerak
+        if (page === "profile" && !getToken()) {
+            if(confirm("Bu bo‘limga kirish uchun tizimga kirishingiz kerak. Kirish sahifasiga o‘tamizmi?")) {
+                window.location.href = "login.html";
+            }
+            return;
+        }
+
+        // Active classni almashtirish
+        navLinks.forEach(a => a.classList.remove("active"));
+        link.classList.add("active");
+
+        // Sahifalarni almashtirish
+        document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+        const targetPage = document.getElementById(page);
+        if(targetPage) targetPage.style.display = "block";
+
+        // Agar profil bo'lsa, yuklaymiz
+        if (page === "profile") loadMyAds();
+    });
+});
+
+// Qidiruv (Search)
+if (searchBtn && searchInput) {
+    const handleSearch = () => {
+        const query = searchInput.value.trim();
+        loadProducts(query, "");
         
-//     `;
-// }
+        // Home sahifasini ochish
+        document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+        document.getElementById("home").style.display = "block";
+    };
 
+    searchBtn.addEventListener("click", handleSearch);
+    searchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") handleSearch();
+    });
+}
 
-          const searchInput = document.getElementById("searchInput");
-      const searchBtn = document.getElementById("searchBtn");
+// Kategoriyalar
+document.querySelectorAll(".category-card").forEach(card => {
+    card.addEventListener("click", () => {
+        const category = card.dataset.category;
+        loadProducts("", category);
 
-      searchBtn.addEventListener("click", async () => {
-          const query = searchInput.value.trim();
-          if(!query) return loadProducts(); // agar bo‘sh bo‘lsa barcha e'lonlar
+        // Home sahifasini ochish
+        document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+        document.getElementById("home").style.display = "block";
+    });
+});
 
-          try {
-              const res = await fetch(`${API_BASE}?search=${encodeURIComponent(query)}`, {
-                  credentials: "include"
-              });
+/**
+ * 5. CRUD OPERATSIYALARI (Create, Delete)
+ */
 
-              if(!res.ok) throw new Error("Network response not ok");
-
-              const data = await res.json();
-              const grid = document.querySelector("#home .ads-grid");
-
-              if(!data || data.length === 0){
-                  grid.innerHTML = "<p>Hech narsa topilmadi</p>";
-                  return;
-              }
-
-              grid.innerHTML = data.map(item => createAdCard(item, false)).join("");
-          } catch(err) {
-              console.error("Fetch error:", err);
-              const grid = document.querySelector("#home .ads-grid");
-              if(grid) grid.innerHTML = "<p>Qidiruvda xato yuz berdi</p>";
-          }
-      });
-
-      // Enter tugmasi bilan ham qidiruv
-      searchInput.addEventListener("keypress", (e) => {
-          if(e.key === "Enter"){
-              searchBtn.click();
-          }
-      });
-
-
-  // Kategoriya kartalarini tanlaymiz
-  const categoryCards = document.querySelectorAll(".category-card");
-
-  categoryCards.forEach(card => {
-      card.addEventListener("click", async () => {
-          const category = card.dataset.category; // data-category dan olamiz
-
-          try {
-              let url = API_BASE;
-              if(category) url += `?kategoriya=${encodeURIComponent(category)}`;
-
-              const res = await fetch(url, { credentials: "include" });
-              if(!res.ok) throw new Error("Network response not ok");
-
-              const data = await res.json();
-              const grid = document.querySelector("#home .ads-grid");
-
-              if(!data || data.length === 0){
-                  grid.innerHTML = "<p>Tanlangan kategoriya bo‘yicha e’lonlar topilmadi</p>";
-                  return;
-              }
-
-              // Adlarni gridga joylash
-              grid.innerHTML = data.map(item => createAdCard(item, false)).join("");
-
-              // Home page'ga o'tkazish
-              document.querySelectorAll(".page").forEach(p => p.style.display = "none");
-              document.getElementById("home").style.display = "block";
-
-          } catch(err){
-              console.error("Fetch error:", err);
-              const grid = document.querySelector("#home .ads-grid");
-              if(grid) grid.innerHTML = "<p>Server bilan bog‘lanishda xato</p>";
-          }
-      });
-  });
-
-
-  // E’lon o‘chirish
+// E'lon o'chirish (DELETE)
 document.addEventListener("click", async (e) => {
-    if(e.target.classList.contains("delete-btn")) {
-        // data-id ni olamiz
-        const adCard = e.target.closest(".ad-card");
-        const id = adCard.dataset.id;
+    if (e.target.classList.contains("delete-btn")) {
+        const id = e.target.dataset.id;
+        const token = getToken();
 
-        if(confirm("E’lonni o‘chirilsinmi?")) {
+        if (!token) {
+            alert("Xatolik: Tizimga kirmagansiz!");
+            return;
+        }
+
+        if (confirm("Rostdan ham bu e’lonni o‘chirmoqchimisiz?")) {
+            // Buttonni o'chirib turamiz
+            e.target.disabled = true;
+            e.target.innerText = "...";
+
             try {
                 const res = await fetch(`${API_BASE}CRUD/${id}/`, {
                     method: "DELETE",
-                    credentials: "include" // cookie bilan session ishlatilsa
+                    headers: {
+                        "Authorization": `Bearer ${token}`, // <-- Token
+                        "Content-Type": "application/json"
+                    }
                 });
 
-                if(res.ok){
-                    alert("E’lon muvaffaqiyatli o‘chirildi");
-                    // Agar foydalanuvchining o‘z e’lonlari sahifasida bo‘lsa, yangilaymiz
+                if (res.status === 401) {
+                    logout();
+                    return;
+                }
+
+                if (res.ok) {
+                    alert("E’lon o‘chirildi");
+                    // Qaysi sahifada bo'lsa o'shani yangilaymiz
                     const profilePage = document.getElementById("profile");
-                    if(profilePage.style.display !== "none"){
+                    if (profilePage && profilePage.style.display !== "none") {
                         loadMyAds();
                     } else {
                         loadProducts();
@@ -362,97 +318,114 @@ document.addEventListener("click", async (e) => {
                 } else {
                     const err = await res.json();
                     alert("Xato: " + JSON.stringify(err));
+                    e.target.disabled = false;
+                    e.target.innerText = "O‘chirish";
                 }
-            } catch(err){
+            } catch (err) {
                 console.error(err);
                 alert("Server bilan bog‘lanishda xato");
+                e.target.disabled = false;
+                e.target.innerText = "O‘chirish";
             }
         }
     }
 });
 
+// E'lon qo'shish (CREATE - POST)
+if (addForm) {
+    // Xabar chiqarish joyi
+    let msgDiv = document.createElement("div");
+    msgDiv.style.marginTop = "10px";
+    msgDiv.style.fontWeight = "bold";
+    addForm.appendChild(msgDiv);
 
+    let canSubmit = true; 
+    
+    // Formni klonlash shart emas, chunki bu kod faqat bir marta yuklanadi.
+    // Lekin duplicate listenerlarni oldini olish uchun tekshiramiz.
+    
+    const submitBtn = addForm.querySelector("button[type='submit']");
 
-const form = document.getElementById("addForm");
-const addSection = document.getElementById("add");
-const addBtn = form.querySelector("button[type='submit']");
+    addForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-// Xabar ko‘rsatish uchun div yaratish
-let msgDiv = document.createElement("div");
-msgDiv.style.marginTop = "10px";
-msgDiv.style.fontSize = "0.95rem";
-msgDiv.style.color = "var(--green)";
-form.appendChild(msgDiv);
-
-let canSubmit = true; // 30s blok flag
-
-// Agar eski listener bo‘lsa, uni olib tashlash
-form.replaceWith(form.cloneNode(true));
-const newForm = document.getElementById("addForm");
-const newAddBtn = newForm.querySelector("button[type='submit']");
-
-// Listener faqat bir marta ishlaydi
-newForm.addEventListener("submit", async function (e) {
-  e.preventDefault();
-
-  if (!canSubmit) {
-    msgDiv.textContent = "Iltimos, 30 sekund kuting!";
-    msgDiv.style.color = "var(--orange)";
-    return;
-  }
-
-  const formData = new FormData(newForm);
-
-  try {
-    canSubmit = false;
-    newAddBtn.disabled = true;
-    msgDiv.textContent = "E’lon joylanmoqda...";
-    msgDiv.style.color = "var(--blue)";
-
-    const res = await fetch(`${API_BASE}add/`, {
-      method: "POST",
-      body: formData,
-      credentials: "include",
-    });
-
-    if (res.ok) {
-      msgDiv.textContent = "E’lon muvaffaqiyatli qo‘shildi!";
-      msgDiv.style.color = "var(--green)";
-      newForm.reset();
-      addSection.style.display = "none";
-      loadProducts();
-      loadMyAds();
-
-      // 30 sekund blok
-      let seconds = 30;
-      newAddBtn.textContent = `Kutish: ${seconds}s`;
-      const timer = setInterval(() => {
-        seconds--;
-        newAddBtn.textContent = `Kutish: ${seconds}s`;
-        if (seconds <= 0) {
-          clearInterval(timer);
-          newAddBtn.textContent = "E’lonni joylash";
-          canSubmit = true;
-          newAddBtn.disabled = false;
-          msgDiv.textContent = "";
+        const token = getToken();
+        if (!token) {
+            alert("E'lon qo'shish uchun avval tizimga kiring!");
+            window.location.href = "login.html";
+            return;
         }
-      }, 1000);
 
-    } else {
-      const errText = await res.text();
-      msgDiv.textContent = "Xato: E’lon qo‘shilmadi!";
-      msgDiv.style.color = "var(--orange)";
-      console.error(errText);
-      canSubmit = true;
-      newAddBtn.disabled = false;
-    }
+        if (!canSubmit) {
+            msgDiv.innerText = "Iltimos, biroz kuting...";
+            msgDiv.style.color = "orange";
+            return;
+        }
 
-  } catch (err) {
-    msgDiv.textContent = "Serverga ulanishda xato";
-    msgDiv.style.color = "var(--orange)";
-    console.error(err);
-    canSubmit = true;
-    newAddBtn.disabled = false;
-  }
-});
+        const formData = new FormData(addForm);
 
+        try {
+            canSubmit = false;
+            submitBtn.disabled = true;
+            msgDiv.innerText = "E’lon joylanmoqda... (Rasm yuklash biroz vaqt oladi)";
+            msgDiv.style.color = "blue";
+
+            const res = await fetch(`${API_BASE}add/`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}` 
+                    // Content-Type ni YOZMANG! FormData o'zi hal qiladi.
+                },
+                body: formData
+            });
+
+            if (res.status === 401) {
+                alert("Sessiya vaqti tugadi. Qaytadan kiring.");
+                logout();
+                return;
+            }
+
+            if (res.ok) {
+                msgDiv.innerText = "Muvaffaqiyatli qo‘shildi!";
+                msgDiv.style.color = "green";
+                addForm.reset();
+                
+                // Yangilash
+                loadProducts();
+                loadMyAds();
+
+                // 30 sekundlik timer
+                let seconds = 30;
+                const timer = setInterval(() => {
+                    submitBtn.innerText = `Kutish: ${seconds}s`;
+                    seconds--;
+                    if (seconds < 0) {
+                        clearInterval(timer);
+                        submitBtn.innerText = "E'lonni joylash";
+                        submitBtn.disabled = false;
+                        canSubmit = true;
+                        msgDiv.innerText = "";
+                    }
+                }, 1000);
+
+            } else {
+                const errData = await res.json().catch(() => ({ detail: "Noma'lum xato" }));
+                msgDiv.innerText = "Xato: " + JSON.stringify(errData);
+                msgDiv.style.color = "red";
+                console.error("Add error:", errData);
+                
+                canSubmit = true;
+                submitBtn.disabled = false;
+                submitBtn.innerText = "E'lonni joylash";
+            }
+
+        } catch (err) {
+            console.error(err);
+            msgDiv.innerText = "Serverga ulanishda xato";
+            msgDiv.style.color = "red";
+            canSubmit = true;
+            submitBtn.disabled = false;
+            submitBtn.innerText = "E'lonni joylash";
+        }
+    });
+}
