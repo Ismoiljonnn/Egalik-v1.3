@@ -37,36 +37,28 @@
 </div>
 
 <script>
-const API_BASE = "https://egalik-api-v01.onrender.com/"; // Server URL
+const API_BASE = "https://egalik-api-v01.onrender.com/"; 
 
 const form = document.getElementById("regForm");
 const btn = document.getElementById("regBtn");
 
-// Boshlanishida tugmani o'chirib turamiz
 btn.disabled = true;
 
-// Tugmani faqat form valid bo'lsa faollashtirish
 form.addEventListener("input", () => {
     btn.disabled = !form.checkValidity();
 });
 
-// Form submit
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
-
-    // 1. Tugmani bloklaymiz
     btn.disabled = true;
     btn.innerText = "Yuborilmoqda...";
 
-    // 2. Ma'lumotlarni yig'ish
     const formData = new FormData(form);
     
-    // .trim() bu juda muhim - foydalanuvchi bilmasdan probel qo'shib qo'ysa tozalaydi
     const username = formData.get("username").trim();
     const password = formData.get("password").trim();
     const repeat = formData.get("repeat").trim();
 
-    // Frontend password tekshiruvi
     if (password !== repeat) {
         alert("Parollar mos kelmadi!");
         btn.disabled = false;
@@ -74,52 +66,54 @@ form.addEventListener("submit", async (e) => {
         return;
     }
 
-    // Backend kutgan format (Email yo'q)
+    // O'ZGARISH SHU YERDA:
     const payload = {
         username: username,
         password: password,
-        password2: repeat 
+        password2: repeat,
+        email: "" // <-- Server xafa bo'lmasligi uchun bo'sh email qo'shamiz
     };
 
     try {
-        // 3. So'rov yuborish
         const res = await fetch(API_BASE + "auth/register/", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
 
-        // Javobni o'qish
-        const data = await res.json().catch(() => ({}));
+        // Agar server HTML xato qaytarsa, uni ko'rish uchun text() ishlatamiz
+        const textResponse = await res.text();
+        let data = {};
+        
+        try {
+            data = JSON.parse(textResponse);
+        } catch (jsonError) {
+            // Agar JSON bo'lmasa, demak serverda qattiq xato (500) bor
+            console.error("Server HTML qaytardi:", textResponse);
+            alert(`Server xatosi (${res.status}):\nBackendda muammo borga o'xshaydi.`);
+            btn.disabled = false;
+            btn.innerText = "Ro'yhatdan o'tish";
+            return;
+        }
 
         if (res.ok) {
-            alert("Muvaffaqiyatli! \nEndi login sahifasiga o'tib, profilingizga kiring.");
+            alert("Muvaffaqiyatli! \nEndi login qiling.");
             window.location.href = "login.html";
         } else {
-            // 4. Xatolarni chiqarish
-            let errorMsg = "Xatolik yuz berdi:\n";
-
-            if (data.username) errorMsg += "- Username: " + data.username.join(", ") + "\n";
-            if (data.password) errorMsg += "- Parol: " + data.password.join(", ") + "\n";
+            let errorMsg = "Xatolik:\n";
+            if (data.username) errorMsg += "- Username: " + data.username.join(" ") + "\n";
+            if (data.password) errorMsg += "- Parol: " + data.password.join(" ") + "\n";
             if (data.detail) errorMsg += "- " + data.detail + "\n";
             
-            // Agar aniq xato topilmasa to'liq jsonni chiqaramiz
-            if (errorMsg === "Xatolik yuz berdi:\n") {
-                errorMsg += JSON.stringify(data);
-            }
-
-            alert(errorMsg);
+            if (errorMsg === "Xatolik:\n") errorMsg += JSON.stringify(data);
             
+            alert(errorMsg);
             btn.disabled = false;
             btn.innerText = "Ro'yhatdan o'tish";
         }
 
     } catch (err) {
-        console.error("Register Error:", err);
-        alert("Server bilan bog‘lanishda xato. Internetni tekshiring.");
-        
+        alert("Internet yoki Server xatosi: " + err.message);
         btn.disabled = false;
         btn.innerText = "Ro'yhatdan o'tish";
     }
