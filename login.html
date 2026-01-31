@@ -37,46 +37,80 @@
 </div>
 
 <script>
-const form = document.getElementById("loginForm");
-const btn = document.getElementById("loginBtn");
-btn.disabled = true;
+const API_BASE = "https://egalik-api-v01.onrender.com/";
+    const form = document.getElementById("loginForm");
+    const btn = document.getElementById("loginBtn");
+    
+    // Boshlanishida tugmani o'chirib turamiz
+    btn.disabled = true;
 
-form.addEventListener("input", () => {
-    btn.disabled = !form.checkValidity();
-});
+    // Inputlar o'zgarganda validatsiyani tekshirish
+    form.addEventListener("input", () => {
+        btn.disabled = !form.checkValidity();
+    });
 
-form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    const username = form.elements["username"].value;
-    const password = form.elements["password"].value;
+        // Tugmani bosib bo'lmaydigan qilib turamiz
+        btn.disabled = true;
+        btn.innerText = "Kirilmoqda...";
 
-    try {
-                const res = await fetch("https://egalik-api-v01.onrender.com/auth/login/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ username, password }),
-            credentials: "include"
-        });
+        const username = form.elements["username"].value;
+        const password = form.elements["password"].value;
 
-        if(res.ok){
-            const data = await res.json();
-            alert(data.message); // Welcome username ✅
-            // Agar session cookie bo‘lishini xohlaysan, Django settingsda SESSION_COOKIE ni to‘g‘ri sozlash kerak
-            window.location.href = "index.html";
-        } else {
-            const err = await res.json().catch(() => null);
-            alert("Login xato: " + (err ? JSON.stringify(err) : "Server javobi xato"));
+        try {
+            const res = await fetch(API_BASE + "auth/login/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            // JSON o'qishda xato bo'lsa (masalan server 500 qaytarsa), bo'sh obyekt olamiz
+            const data = await res.json().catch(() => ({}));
+
+            if (res.ok) {
+                // Tokenni tekshiramiz
+                const token = data.access || data.token || data.key; 
+
+                if (token) {
+                    localStorage.setItem("accessToken", token);
+                    localStorage.setItem("username", username);
+                    
+                    if (data.refresh) {
+                        localStorage.setItem("refreshToken", data.refresh);
+                    }
+
+                    // Muvaffaqiyatli o'tish
+                    window.location.replace("index.html");
+                } else {
+                    alert("Xatolik: Server token qaytarmadi.");
+                    btn.disabled = false;
+                    btn.innerText = "Kirish";
+                }
+            } else {
+                // Xatolikni chiroyli chiqarish
+                let errorMsg = "Login yoki parol xato!";
+                
+                if (data.detail) errorMsg = data.detail;
+                else if (data.message) errorMsg = data.message;
+                else if (data.non_field_errors) errorMsg = data.non_field_errors[0];
+
+                alert(errorMsg);
+                
+                btn.disabled = false;
+                btn.innerText = "Kirish";
+            }
+        } catch (err) {
+            console.error("Login Error:", err);
+            alert("Serverga ulanishda xatolik yuz berdi. Internetni tekshiring.");
+            btn.disabled = false;
+            btn.innerText = "Kirish";
         }
-    } catch(err){
-        console.error(err);
-        alert("Server bilan bog‘lanishda xato");
-    }
-});
-
-
+    });
 </script>
 </body>
+
 </html>
