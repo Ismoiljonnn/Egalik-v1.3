@@ -23,11 +23,6 @@
             <i class='bx bx-lock'></i> 
         </div>
 
-        <!-- <div class="remember-forgot">
-            <label><input type="checkbox"> Remember me</label>
-            <a href="#">Forgot password?</a>
-        </div> -->
-
         <button id="loginBtn" type="submit" class="btn">Login</button>
 
         <div class="register-link">
@@ -52,30 +47,37 @@
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        // Tugmani bosib bo'lmaydigan qilib turamiz
+        // 1. Tugmani bloklaymiz
         btn.disabled = true;
-        btn.innerText = "Kirilmoqda...";
+        btn.innerText = "Tekshirilmoqda...";
 
-        const username = form.elements["username"].value;
-        const password = form.elements["password"].value;
+        // 2. Ma'lumotlarni tozalab olamiz (ENG MUHIM QISM)
+        // .trim() bu probellarni olib tashlaydi
+        const username = form.elements["username"].value.trim();
+        const password = form.elements["password"].value.trim();
 
         try {
+            console.log("Login so'rovi yuborilmoqda:", username);
+
+            // 3. Serverga so'rov yuborish
             const res = await fetch(API_BASE + "auth/login/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
+                    // Eslatma: 'Authorization' headeri login paytida kerak emas
                 },
                 body: JSON.stringify({ username, password })
             });
 
-            // JSON o'qishda xato bo'lsa (masalan server 500 qaytarsa), bo'sh obyekt olamiz
+            // 4. Javobni o'qish
             const data = await res.json().catch(() => ({}));
 
             if (res.ok) {
-                // Tokenni tekshiramiz
+                // Backenddan keladigan token har xil bo'lishi mumkin, hammasini tekshiramiz
                 const token = data.access || data.token || data.key; 
 
                 if (token) {
+                    // Tokenni saqlaymiz
                     localStorage.setItem("accessToken", token);
                     localStorage.setItem("username", username);
                     
@@ -84,30 +86,36 @@
                     }
 
                     // Muvaffaqiyatli o'tish
+                    // alert("Xush kelibsiz!"); // Ixtiyoriy
                     window.location.replace("index.html");
                 } else {
-                    alert("Xatolik: Server token qaytarmadi.");
+                    alert("Xatolik: Server OK dedi, lekin Token bermadi!\nJavob: " + JSON.stringify(data));
                     btn.disabled = false;
-                    btn.innerText = "Kirish";
+                    btn.innerText = "Login";
                 }
             } else {
-                // Xatolikni chiroyli chiqarish
+                // XATOLIKNI ANIQLASH
                 let errorMsg = "Login yoki parol xato!";
                 
+                // Serverdan kelgan aniq xabarni olishga harakat qilamiz
                 if (data.detail) errorMsg = data.detail;
                 else if (data.message) errorMsg = data.message;
                 else if (data.non_field_errors) errorMsg = data.non_field_errors[0];
+                else if (Object.keys(data).length > 0) errorMsg = JSON.stringify(data);
 
                 alert(errorMsg);
                 
+                // Konsolga ham chiqaramiz (F12 bosib ko'rish uchun)
+                console.error("Login xatosi:", data);
+                
                 btn.disabled = false;
-                btn.innerText = "Kirish";
+                btn.innerText = "Login";
             }
         } catch (err) {
-            console.error("Login Error:", err);
-            alert("Serverga ulanishda xatolik yuz berdi. Internetni tekshiring.");
+            console.error("Ulanish xatosi:", err);
+            alert("Internet yoki Server bilan aloqa yo'q.\nIltimos, internetingizni tekshiring.");
             btn.disabled = false;
-            btn.innerText = "Kirish";
+            btn.innerText = "Login";
         }
     });
 </script>
